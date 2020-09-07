@@ -31,25 +31,35 @@ public class PlayState extends State {
     private int groundYCoordinate = 405;
     private static final int BLOCK_HEIGHT = 50;
     private static final int BLOCK_WIDTH = 20;
-    private static final int GROUND_HEIGHT = 40;
-    private static final int GROUND_WIDTH = 25;
+    private int groundHeight = 40;
+    private static final int GROUND_WIDTH = 1;
     private static final int ZAP_HEIGHT = 20;
     private static final int ZAP_WIDTH = 20;
     private int blockSpeed = -200;
     private int zapSpeed = -200;
     private int groundSpeed = -40;
     private int heightChange = 0;
-    //private static final int PLAYER_WIDTH = 44;
-    private static final int PLAYER_WIDTH = 66;
-    //private static final int PLAYER_HEIGHT = 61;
-    private static final int PLAYER_HEIGHT = 92;
-
+    private int playerLeft = 150;
+    private int playerTop = 300;
+    private static final int PLAYER_WIDTH = 72;
+    private int playerRight = playerLeft + PLAYER_WIDTH;
+    private static final int PLAYER_HEIGHT = 97;
+    private Ground playerGround;
     private float recentTouchY;
+    private boolean playerGroundSet;
 
     @Override
     public void init() {
-        player = new Player(160, GameMainActivity.GAME_HEIGHT - 45
-                - PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
+        ground = new ArrayList<Ground>();
+        for (int i = 0; i < 1000; i++) {
+            //changeHeight(groundYCoordinate);
+            Ground gr = new Ground(i, groundYCoordinate,
+                    GROUND_WIDTH, groundHeight );
+            ground.add(gr); // Add latest new instance of Ground to the ground Array
+        }
+        // new Player(Leftside(x), Topside(y), Width, Height, position of 1st Ground Block)
+        // 7th=(6 array starts at 0) Ground Block start at x = 150 where the player is
+
         blocks = new ArrayList<Block>();
         zaps = new ArrayList<Zap>();
         ground = new ArrayList<Ground>();
@@ -64,14 +74,16 @@ public class PlayState extends State {
                     ZAP_WIDTH, ZAP_HEIGHT);
             zaps.add(z);
         }
-        for (int i = 0; i < 40; i++) { // Need 10 blocks to make sure both ends are always covered
-           // Ground gr = new Ground(i * 100, GameMainActivity.GAME_WIDTH,
+        for (int i = 0; i < 1000; i++) {
             changeHeight(groundYCoordinate);
-            Ground gr = new Ground(i * 25, groundYCoordinate,
-                    GROUND_WIDTH, GROUND_HEIGHT );
-            ground.add(gr);
+            Ground gr = new Ground(i, groundYCoordinate,
+                    GROUND_WIDTH, groundHeight );
+            ground.add(gr); // Add latest new instance of Ground to the ground Array
         }
-    }
+        player = new Player(playerLeft,
+                GameMainActivity.GAME_HEIGHT - PLAYER_HEIGHT - groundHeight , PLAYER_WIDTH,
+                PLAYER_HEIGHT, ground.get(6));
+        }
 
     @Override
     public void update(float delta) {
@@ -89,27 +101,30 @@ public class PlayState extends State {
         cloud2.update(delta);
         spaceship1.update(delta);
         Assets.runAnim.update(delta);
-        player.update(delta);
-        updateBlocks(delta);
-        updateZaps(delta);
+        playerLeft = (int) player.getPlayerLeft();
+        playerTop = (int) player.getPlayerTop();
         updateGround(delta);
+        player.update(delta, playerGround);
+       // updateBlocks(delta);
+        updateZaps(delta);
+
     }
 
-    private void updateBlocks(float delta) {
-        for (int i = 0; i < blocks.size(); i++) {
-            Block b = blocks.get(i);
-            b.update(delta, blockSpeed);
-            if (b.isVisible()) {
-                if (player.isDucked()
-                        && Rect.intersects(b.getRect(), player.getDuckRect())) {
-                    b.onCollide(player);
-                } else if (!player.isDucked()
-                        && Rect.intersects(b.getRect(), player.getRect())) {
-                    b.onCollide(player);
-                }
-            }
-        }
-    }
+    //private void updateBlocks(float delta) {
+    //    for (int i = 0; i < blocks.size(); i++) {
+    //       Block b = blocks.get(i);
+    //        b.update(delta, blockSpeed);
+    //        if (b.isVisible()) {
+    //            if (player.isDucked()
+    //                    && Rect.intersects(b.getRect(), player.getDuckRect())) {
+    //                b.onCollide(player);
+    //            } else if (!player.isDucked()
+    //                    && Rect.intersects(b.getRect(), player.getRect())) {
+    //                b.onCollide(player);
+    //            }
+    //        }
+    //    }
+    //}
 
     private void updateZaps(float delta) {
         for (int i = 0; i < zaps.size(); i++) {
@@ -128,10 +143,16 @@ public class PlayState extends State {
     }
 
     private void updateGround(float delta) {
+        playerGroundSet = false;
         for (int i = 0; i < ground.size(); i++) {
             Ground gr = ground.get(i);
             gr.update(delta, groundSpeed);
+            if (gr.getGroundLeft() >= (float) playerLeft && gr.getGroundLeft() <= (float) playerRight && !playerGroundSet) {
+                playerGround = gr;
+                playerGroundSet = true;
+            }
         }
+
     }
 
     @Override
@@ -140,19 +161,13 @@ public class PlayState extends State {
         g.setColor(Color.rgb(128,128,128));
         g.fillRect(0, 0, GameMainActivity.GAME_WIDTH,
                 GameMainActivity.GAME_HEIGHT);
-        renderPlayer(g);
         renderBlocks(g);
         renderZaps(g);
         renderSun(g);
         renderClouds(g);
         renderSpaceShip(g);
         renderGround(g);
-        //g.drawImage(Assets.grass, 0, 405); // This will change to draw a changing background
-        /*
-        Maybe change Assets.grass to enable the ground to move around - Not sure the model can
-        cope with this at the moment, because I think 405 is hard coded in a few places as the
-        ground and this will need to change.
-         */
+        renderPlayer(g);
         renderScore(g);
     }
 
@@ -166,16 +181,16 @@ public class PlayState extends State {
     private void renderPlayer(Painter g) {
         if (player.isGrounded()) {
             if (player.isDucked()) {
-                g.drawImage(Assets.duck, (int) player.getX(),
-                        (int) player.getY());
+                g.drawImage(Assets.duck, (int) player.getPlayerLeft(),
+                        (int) player.getPlayerTop());
             } else {
-                Assets.runAnim.render(g, (int) player.getX(),
-                        (int) player.getY(), player.getWidth(),
-                        player.getHeight());
+                Assets.runAnim.render(g, (int) player.getPlayerLeft(),
+                        (int) player.getPlayerTop(), player.getPlayerWidth(),
+                        player.getPlayerHeight());
             }
         } else {
-            g.drawImage(Assets.jump, (int) player.getX(), (int) player.getY(),
-                    player.getWidth(), player.getHeight());
+            g.drawImage(Assets.jump, (int) player.getPlayerLeft(), (int) player.getPlayerTop(),
+                    player.getPlayerWidth(), player.getPlayerHeight());
         }
     }
 
@@ -200,9 +215,9 @@ public class PlayState extends State {
         for (int i = 0; i < ground.size(); i++) {
             Ground gr = ground.get(i);
             if (gr.isVisible()) {
-         //       g.drawImage(Assets.grass, (int) gr.getX(), (int) gr.getY(),
-                g.drawImage(Assets.grass, (int) gr.getX(), (int) gr.getY(),
-                        GROUND_WIDTH, GROUND_HEIGHT);
+                groundHeight = GameMainActivity.GAME_HEIGHT - (int) gr.getGroundTop();
+                g.drawImage(Assets.grass, (int) gr.getGroundLeft(), (int) gr.getGroundTop(),
+                        GROUND_WIDTH, groundHeight);
             }
         }
     }
@@ -246,9 +261,9 @@ public class PlayState extends State {
     public void changeHeight(int y) {
         heightChange = RandomNumberGenerator.getRandInt(3);
         if ((heightChange == 0) && (y < 415)) {
-            groundYCoordinate += 10;
+            groundYCoordinate += 3;
         } else if ((heightChange == 1 && y > 0)) {
-            groundYCoordinate -= 10;
+            groundYCoordinate -= 3;
         } ;
     }
 }

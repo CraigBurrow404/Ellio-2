@@ -4,43 +4,37 @@ import android.graphics.Rect;
 import com.example.ellioandroid.framework.util.RandomNumberGenerator;
 
 public class Ground {
-    private float x, y;
-    private int width, height ;
+    private float groundLeft, groundTop;
+    private int groundWidth, groundHeight ;
     private Rect rect;
     private boolean visible;
 
     public Ground(float x, float y, int width, int height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height; // this has to change to move the ground around how many ground
-        // objects will get used? The images need to be longer to fit any place on screen
-        rect = new Rect((int) x, (int) y, (int) x + width, (int) y + height);
+        this.groundLeft = (float) x;
+        this.groundTop = (float) y;
+        this.groundWidth = (int) width;
+        this.groundHeight = (int) height;
+        rect = new Rect((int) groundLeft, (int) groundTop, (int) groundLeft + width,
+                (int) groundTop + groundHeight);
         visible = true;
     }
 
-    public void update(float delta, float velX) {
-        x += velX * delta;
+    public void update(float delta, float velocityGroundLeft) {
+        groundLeft += velocityGroundLeft * delta;
         updateRect();
-        if (x <= -100) {
+        if (groundLeft <= -100) {
             reset();
         }
     }
 
     public void updateRect() {
-        rect.set((int) x, (int) y, (int) x + width, (int) y + height);
+        rect.set((int) groundLeft, (int) groundTop, (int) groundLeft + groundWidth,
+                (int) groundTop + groundHeight);
     }
 
     public void reset() {
         visible = true; // change this to hide these objects on screen
-        // 1 in 3 chance of becoming an Upper Block
-        //if (RandomNumberGenerator.getRandInt(3) == 0) {
-        //    y = UPPER_Y;
-        //} else {
-        //    y = LOWER_Y;
-        //}
-        //y = 405;
-        x += 1000;
+        groundLeft += 1000;
         updateRect();
 
     }
@@ -50,12 +44,12 @@ public class Ground {
         p.pushBack(30); // This needs to change
     }
 
-    public float getX() {
-        return x;
+    public float getGroundLeft() {
+        return groundLeft;
     }
 
-    public float getY() {
-        return y;
+    public float getGroundTop() {
+        return groundTop;
     }
 
     public boolean isVisible() {
