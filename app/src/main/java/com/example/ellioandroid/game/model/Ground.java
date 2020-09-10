@@ -5,7 +5,7 @@ import com.example.ellioandroid.framework.util.RandomNumberGenerator;
 
 public class Ground {
     private float groundLeft, groundTop;
-    private int groundWidth, groundHeight ;
+    private int groundWidth, groundHeight;
     private Rect rect;
     private boolean visible;
 
@@ -19,11 +19,11 @@ public class Ground {
         visible = true;
     }
 
-    public void update(float delta, float velocityGroundLeft) {
+    public void update(float delta, float velocityGroundLeft, int groundTotalLength) {
         groundLeft += velocityGroundLeft * delta;
         updateRect();
-        if (groundLeft <= -100) {
-            reset();
+        if (groundLeft <= -1) {
+            reset(groundTotalLength);
         }
     }
 
@@ -32,9 +32,9 @@ public class Ground {
                 (int) groundTop + groundHeight);
     }
 
-    public void reset() {
+    public void reset(int groundTotalLength) {
         visible = true; // change this to hide these objects on screen
-        groundLeft += 1000;
+        groundLeft += groundTotalLength;
         updateRect();
 
     }
@@ -51,7 +51,6 @@ public class Ground {
     public float getGroundTop() {
         return groundTop;
     }
-
     public boolean isVisible() {
         return visible;
     }

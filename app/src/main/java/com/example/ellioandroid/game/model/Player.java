@@ -9,6 +9,16 @@ public class Player {
     private int playerWidth, playerHeight, velocityPlayerHeight;
     private Rect rect, duckRect;
     private Ground ground;
+    /* playerStates
+    0 Running on the Ground
+    1 Jumping
+    2 Ducked
+    3 Somersault
+    4 Jet Pack
+    5 Double Jump
+    6 Karate Kick
+    */
+    private short playerState;
     private boolean isAlive;
     private boolean isDucked;
     private boolean isGrounded;
@@ -28,46 +38,58 @@ public class Player {
         rect.set(ground.getRect());
         duckRect = new Rect();
         isAlive = true;
-        isDucked = false;
-        isGrounded = true;
+        /* playerStates
+              0 Running on the Ground
+              1 Jumping
+              2 Ducked
+              3 Somersault
+              4 Jet Pack
+              5 Double Jump
+              6 Karate Kick
+        */
+        playerState = 0;
     }
-/*
-public void update(float delta) {
-    if (duckDuration > 0 && isDucked) {
-        duckDuration -= delta;
-    } else {
-        isDucked = false;
-        duckDuration = .6f;
-    }
-    if (!isGrounded()) {
-        velY += ACCEL_GRAVITY * delta;
-    } else {
-        y = 406 - height;
-        velY = 0;
-    }
-    y += velY * delta;
-    updateRects();
+    public void updatePlayerStateAndHeight(float playerLeft, float playerTop, int playerWidth,
+                                           int playerHeight, Ground ground, float delta) {
+        this.playerLeft  = playerLeft;
+        this.playerTop = playerTop;
+        this.playerWidth = playerWidth;
+        this.playerHeight = playerHeight;
+        playerBottom = this.playerHeight + this.playerTop;
+        this.ground = ground;
 
- */
-    public void update(float delta, Ground playerGround) {
-        playerBottom = playerTop + playerHeight;
-        if (duckDuration > 0 && isDucked) {
-            duckDuration -= delta;
-        } else {
-            isDucked = false;
-            duckDuration = .6f;
-        }
+        // Test playerState
+        if (playerState == 0) { // Running on the Ground
+            playerBottom = ground.getGroundTop();
 
-        isGrounded = isGrounded();
-
-        if (isGrounded) {
-            velocityPlayerHeight = (int) (playerGround.getGroundTop() - playerBottom);
+        } else if (playerState == 1) { // Jumping
+            velocityPlayerHeight += ACCEL_GRAVITY * delta;
+            playerBottom += velocityPlayerHeight;
+            // Test if player has reached the Ground
+            if (playerBottom >= ground.getGroundTop()) {
+                playerState = 0;
+                playerBottom = ground.getGroundTop();
+            }
+        } else if (playerState == 2) { // Ducking
+            // Check if already Ducked
+            if (duckDuration > 0) {
+                duckDuration -= delta;
             } else {
-            velocityPlayerHeight += ACCEL_GRAVITY * delta;  //Gravity
+                playerState = 0;
+                duckDuration = .6f;
+            /*
+            } else if (playerState == 3) {
+                // Somersault
+            } else if (playerState == 4) {
+                // Jet Packing
+            } else if (playerState == 5) {
+                // Double Jumping
+            } else if (playerState == 6) {
+                // Karate Kick
+            */
+            }
         }
-        playerTop += velocityPlayerHeight * delta;
-
-        updateRects();
+        playerTop = playerBottom - playerHeight;
     }
 
     public void updateRects() {
@@ -78,14 +100,10 @@ public void update(float delta) {
     }
 
     public void jump() {
-        if (isGrounded) {
-            Assets.playSound(Assets.onJumpID);
-            isDucked = false;
-            isGrounded = false;
+             Assets.playSound(Assets.onJumpID);
             duckDuration = .6f;
             playerTop -= 100;
             updateRects();
-        }
     }
 
     public void duck() {
@@ -114,6 +132,7 @@ public void update(float delta) {
     public boolean isGrounded() {
 
         if ((playerBottom) >= ground.getGroundTop()) {
+            playerTop = playerBottom - playerHeight -1;
             return true;
         } else {
             return false;

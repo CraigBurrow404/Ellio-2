@@ -43,29 +43,31 @@ public class PlayState extends State {
     private int playerTop = 300;
     private static final int PLAYER_WIDTH = 72;
     private int playerRight = playerLeft + PLAYER_WIDTH;
+    private int playerMiddle = playerLeft + (PLAYER_WIDTH / 2);
     private static final int PLAYER_HEIGHT = 97;
     private Ground playerGround;
     private float recentTouchY;
     private boolean playerGroundSet;
+    private int groundHeightChangeCounter = 0;
+    private int groundBlockSize = 72;
+    private int groundTotalLength = 500;
 
     @Override
     public void init() {
-        ground = new ArrayList<Ground>();
-        for (int i = 0; i < 1000; i++) {
-            //changeHeight(groundYCoordinate);
-            Ground gr = new Ground(i, groundYCoordinate,
-                    GROUND_WIDTH, groundHeight );
-            ground.add(gr); // Add latest new instance of Ground to the ground Array
-        }
-        // new Player(Leftside(x), Topside(y), Width, Height, position of 1st Ground Block)
-        // 7th=(6 array starts at 0) Ground Block start at x = 150 where the player is
-
         blocks = new ArrayList<Block>();
         zaps = new ArrayList<Zap>();
         ground = new ArrayList<Ground>();
         cloud = new Cloud(100, 100);
         cloud2 = new Cloud(500, 50);
-        spaceship1 = new Spaceship(800,10);
+        spaceship1 = new Spaceship(800,10);       ground = new ArrayList<Ground>();
+
+        for (int i = 0; i < groundTotalLength; i++) {
+            changeGroundHeight(groundYCoordinate);
+            Ground gr = new Ground(i, groundYCoordinate,
+                    GROUND_WIDTH, groundHeight );
+            ground.add(gr); // Add latest new instance of Ground to the ground Array
+        }
+
         for (int i = 0; i < 5; i++) {
             Block b = new Block(i * 200, GameMainActivity.GAME_HEIGHT - 95,
                     BLOCK_WIDTH, BLOCK_HEIGHT);
@@ -74,16 +76,47 @@ public class PlayState extends State {
                     ZAP_WIDTH, ZAP_HEIGHT);
             zaps.add(z);
         }
-        for (int i = 0; i < 1000; i++) {
-            changeHeight(groundYCoordinate);
-            Ground gr = new Ground(i, groundYCoordinate,
-                    GROUND_WIDTH, groundHeight );
-            ground.add(gr); // Add latest new instance of Ground to the ground Array
-        }
+
         player = new Player(playerLeft,
                 GameMainActivity.GAME_HEIGHT - PLAYER_HEIGHT - groundHeight , PLAYER_WIDTH,
                 PLAYER_HEIGHT, ground.get(6));
+    }
+    // Set Ground Heights using ramps for up and down over 10 blocks to smooth out the
+    // contours
+    // 0 down - don't go down if you are as low as you can go
+    // 1 same
+    // 2 up - don't go up if it takes you off screen
+    // 3 Its a pit *** Not coded yet ***
+    // 4 It's a cliff *** Not coded yet ***
+
+    public void changeGroundHeight(int groundYCoordinateOld) {
+
+        // Test Counter if necessary reset it
+        if (groundHeightChangeCounter >= groundBlockSize) {
+            groundHeightChangeCounter = 0;
         }
+
+        if (groundHeightChangeCounter == 0) { // start a new block of terrain
+            heightChange = RandomNumberGenerator.getRandInt(3);
+        }
+
+        if ((heightChange == 0) && (groundYCoordinateOld <= 415)) { // go down
+            groundYCoordinate += 1;
+            groundHeightChangeCounter += 1;
+        } else if ((heightChange == 0) && (groundYCoordinateOld > 415)) { // don't go down too low
+            groundYCoordinate += 0;
+            groundHeightChangeCounter += 1;
+        } else if (heightChange == 1 ) { // stay the same - ground is flat
+            groundYCoordinate += 0;
+            groundHeightChangeCounter += 1;
+        } else if ((heightChange == 2) && (groundYCoordinateOld >= 150)) { // go up
+            groundYCoordinate -= 1;
+            groundHeightChangeCounter += 1;
+        } else if ((heightChange == 2) && (groundYCoordinateOld < 150)) { // don't go up too high
+            groundYCoordinate += 0;
+            groundHeightChangeCounter += 1;
+        }
+    }
 
     @Override
     public void update(float delta) {
@@ -104,7 +137,8 @@ public class PlayState extends State {
         playerLeft = (int) player.getPlayerLeft();
         playerTop = (int) player.getPlayerTop();
         updateGround(delta);
-        player.update(delta, playerGround);
+        player.updatePlayerStateAndHeight(playerLeft, playerTop, PLAYER_WIDTH, PLAYER_HEIGHT,
+                playerGround, delta);
        // updateBlocks(delta);
         updateZaps(delta);
 
@@ -146,8 +180,9 @@ public class PlayState extends State {
         playerGroundSet = false;
         for (int i = 0; i < ground.size(); i++) {
             Ground gr = ground.get(i);
-            gr.update(delta, groundSpeed);
-            if (gr.getGroundLeft() >= (float) playerLeft && gr.getGroundLeft() <= (float) playerRight && !playerGroundSet) {
+            gr.update(delta, groundSpeed, groundTotalLength);
+            if (gr.getGroundLeft() >= (float) playerMiddle
+                    && gr.getGroundLeft() <= (float) playerRight && !playerGroundSet) {
                 playerGround = gr;
                 playerGroundSet = true;
             }
@@ -258,12 +293,4 @@ public class PlayState extends State {
         return true;
     }
 
-    public void changeHeight(int y) {
-        heightChange = RandomNumberGenerator.getRandInt(3);
-        if ((heightChange == 0) && (y < 415)) {
-            groundYCoordinate += 3;
-        } else if ((heightChange == 1 && y > 0)) {
-            groundYCoordinate -= 3;
-        } ;
-    }
 }
