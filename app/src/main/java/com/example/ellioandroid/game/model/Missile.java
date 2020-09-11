@@ -75,11 +75,12 @@ public class Missile {
     }
 
     private void testForCollision() {
-        if     
+        return;
     }
 
     private boolean isCollided() {
         collided = true;
+        return collided;
     }
 
     private void missileCalcs () {
