@@ -22,11 +22,7 @@ public class Collision {
         3 Polymorphic with Sphere
         */
 
-        // *** Need to check this for redundat tests
-        // *** x Axis value for A and C or B and D are always equal for a rectangle
-        // *** same is true for some y axis values
-
-    public Collision(float missileCentreX, float missileCentreY, float missileRadius,
+    public boolean Collision(float missileCentreX, float missileCentreY, float missileRadius,
                      float objectTopLeftX, float objectTopLeftY,
                      int objectWidth, int objectHeight,
                      int collisionType) {
@@ -65,7 +61,7 @@ public class Collision {
                     && (missileTopCentreX >= objectTopLeftY)
                     && (missileBottomCentreY <= objectTopLeftY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX <= objectTopLeftX) // hitting left side
@@ -73,7 +69,7 @@ public class Collision {
                     && (missileTopCentreY >= objectTopLeftY)
                     && (missileBottomCentreY <= objectBottomLeftY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX <= objectTopRightX) // hitting right side
@@ -81,7 +77,7 @@ public class Collision {
                     && (missileTopCentreY >= objectTopRightY)
                     && (missileBottomCentreY <= objectBottomRightY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX <= objectBottomLeftX) // hitting bottom side
@@ -89,7 +85,7 @@ public class Collision {
                     && (missileTopCentreY >= objectBottomLeftX)
                     && (missileBottomCentreY <= objectBottomLeftX)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX >= objectTopLeftX) // totally inside object
@@ -101,7 +97,7 @@ public class Collision {
                     && (missileBottomCentreY >= objectTopRightY)
                     && (missileBottomCentreY <= objectBottomRightY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX <= objectTopLeftX) // hitting top left corner
@@ -109,7 +105,7 @@ public class Collision {
                     && (missileTopCentreY >= objectTopLeftY)
                     && (missileBottomCentreY <= objectTopLeftY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX <= objectTopRightX) // hitting top right corner
@@ -117,7 +113,7 @@ public class Collision {
                     && (missileTopCentreY >= objectTopRightY)
                     && (missileBottomCentreY <= objectTopRightY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX <= objectBottomLeftX) // hitting bottom left corner
@@ -125,7 +121,7 @@ public class Collision {
                     && (missileTopCentreY >= objectBottomLeftY)
                     && (missileBottomCentreY <= objectBottomLeftY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             if ((missileCentreLeftX <= objectBottomRightX) // hitting bottom right corner
@@ -133,11 +129,12 @@ public class Collision {
                     && (missileTopCentreY >= objectBottomRightY)
                     && (missileBottomCentreY <= objectBottomRightY)) {
                 collided = true;
-                return;
+                return collided;
             }
 
             collided = false;
-            return;
+            return collided;
         }
+        return collided;
     }
 }

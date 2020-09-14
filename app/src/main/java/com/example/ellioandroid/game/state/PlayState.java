@@ -13,7 +13,9 @@ import com.example.ellioandroid.framework.util.Painter;
 import com.example.ellioandroid.framework.util.RandomNumberGenerator;
 import com.example.ellioandroid.game.model.Block;
 import com.example.ellioandroid.game.model.Cloud;
+import com.example.ellioandroid.game.model.Collision;
 import com.example.ellioandroid.game.model.Ground;
+import com.example.ellioandroid.game.model.Missile;
 import com.example.ellioandroid.game.model.Player;
 import com.example.ellioandroid.game.model.Spaceship;
 import com.example.ellioandroid.game.model.Zap;
@@ -27,6 +29,7 @@ public class PlayState extends State {
     private ArrayList<Ground> ground;
     private Cloud cloud, cloud2;
     private Spaceship spaceship1;
+    private Missile missile;
     private int playerScore = 0;
     private int groundYCoordinate = 405;
     private static final int BLOCK_HEIGHT = 50;
@@ -51,6 +54,21 @@ public class PlayState extends State {
     private int groundHeightChangeCounter = 0;
     private int groundBlockSize = 72;
     private int groundTotalLength = 500;
+    private int missileOffscreen = 0;
+    private int missileBouncingBomb = 1;
+    private int missileBomb = 2;
+    private int missileLaserBlast = 3;
+    private int missileSnitcher = 4;
+    private int missileBullet =5;
+    private int missileCollided = 100;
+    private int missileType = missileOffscreen;
+    private int missileCentreX = 1000;
+    private int missileCentreY = 0;
+    private int missileRadius = 25;
+    private int objectTopLeftX = 25;
+    private int objectTopLeftY = 25;
+    private int objectWidth = 5;
+    private int objectHeight = 5;
 
     @Override
     public void init() {
@@ -59,7 +77,13 @@ public class PlayState extends State {
         ground = new ArrayList<Ground>();
         cloud = new Cloud(100, 100);
         cloud2 = new Cloud(500, 50);
-        spaceship1 = new Spaceship(800,10);       ground = new ArrayList<Ground>();
+        spaceship1 = new Spaceship(800,10);
+        ground = new ArrayList<Ground>();
+        missile = new Missile(missileTopLeftX, missileTopLeftY, missileWidth, missileHeight,
+                missileType);
+        collision = new Collision(missileCentreX, missileCentreY, missileRadius,
+                objectTopLeftX, objectTopLeftY, objectWidth, objectHeight,
+                collisionType););
 
         for (int i = 0; i < groundTotalLength; i++) {
             changeGroundHeight(groundYCoordinate);
@@ -133,6 +157,11 @@ public class PlayState extends State {
         cloud.update(delta);
         cloud2.update(delta);
         spaceship1.update(delta);
+        missile.update(delta);
+        collision.test;
+        if (isCollided()) {
+            missileState = 100;
+        }
         Assets.runAnim.update(delta);
         playerLeft = (int) player.getPlayerLeft();
         playerTop = (int) player.getPlayerTop();
