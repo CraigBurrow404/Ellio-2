@@ -83,8 +83,7 @@ public class PlayState extends State {
         missile = new Missile(missileCentreX, missileCentreY, missileRadius,
                 missileType);
         collision = new Collision(missileCentreX, missileCentreY, missileRadius,
-                objectTopLeftX, objectTopLeftY, objectWidth, objectHeight,
-                collisionType);
+               objectTopLeftX, objectTopLeftY, objectHeight, objectWidth, collisionType);
 
         for (int i = 0; i < groundTotalLength; i++) {
             changeGroundHeight(groundYCoordinate);

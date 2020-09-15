@@ -15,7 +15,6 @@ public class Collision {
             objectBottomLeftY, objectBottomRightY;
 
     private boolean collided;
-    private int collisionType;
 
         /* Collision Types
         0 Rectangle with Sphere
@@ -24,43 +23,39 @@ public class Collision {
         3 Polymorphic with Sphere
         */
 
-    public booleanCollision {
+    public boolean Collision (float missileCentreX, float missileCentreY, int missileRadius,
+                              float objectTopLeftX, float objectTopLeftY,
+                              int objectHeight, int objectWidth,
+                              int collisionType) {
 
-        missileCentreCentreX = Context.getMissileCentreX(); //*** Got myself in a bit of a pickle
-        getMissileCentreY();
-        getMissileRadius();
-        float objectTopLeftX, float objectTopLeftY,
-        int objectWidth, int objectHeight,
-        int collisionType)
+        missileCentreCentreX = missileCentreX;
+        missileCentreCentreY = missileCentreY;
 
         //Caluclate Missile X and Y boundary coordiantes for tests
-        this.missileTopCentreX      = missileCentreX;
-        this.missileCentreLeftX     = missileCentreX - missileRadius;
-        this.missileCentreCentreX   = missileCentreX;
-        this.missileCentreRightX    = missileCentreX + missileRadius;
-        this.missileBottomCentreX   = missileCentreX;
-        this.missileTopCentreY      = missileCentreY - missileRadius;
-        this.missileCentreLeftY     = missileCentreX;
-        this.missileCentreCentreY   = missileCentreX;
-        this.missileCentreRightY    = missileCentreX;
-        this.missileBottomCentreY   = missileCentreY + missileRadius;
+        missileTopCentreX      = missileCentreX;
+        missileCentreLeftX     = missileCentreX - missileRadius;
+        missileCentreCentreX   = missileCentreX;
+        missileCentreRightX    = missileCentreX + missileRadius;
+        missileBottomCentreX   = missileCentreX;
+        missileTopCentreY      = missileCentreY - missileRadius;
+        missileCentreLeftY     = missileCentreX;
+        missileCentreCentreY   = missileCentreX;
+        missileCentreRightY    = missileCentreX;
+        missileBottomCentreY   = missileCentreY + missileRadius;
 
         //Calculate Object coordinates
-        this.objectTopLeftX         = objectTopLeftX;
-        this.objectTopRightX        = objectTopLeftX + objectWidth;
-        this.objectBottomLeftX      = objectTopLeftX;
-        this.objectBottomRightX     = objectTopLeftX + objectWidth;
-        this.objectTopLeftY         = objectTopLeftY;
-        this.objectTopRightY        = objectTopLeftY;
-        this.objectBottomLeftY      = objectTopLeftY + objectHeight;
-        this.objectBottomRightY     = objectTopLeftY - objectHeight;
-
-        this.collisionType = collisionType;
+        objectTopLeftX         = objectTopLeftX;
+        objectTopRightX        = objectTopLeftX + objectWidth;
+        objectBottomLeftX      = objectTopLeftX;
+        objectBottomRightX     = objectTopLeftX + objectWidth;
+        objectTopLeftY         = objectTopLeftY;
+        objectTopRightY        = objectTopLeftY;
+        objectBottomLeftY      = objectTopLeftY + objectHeight;
+        objectBottomRightY     = objectTopLeftY - objectHeight;
 
         collided = false;
-        this.collisionType = collisionType;
 
-        if (collisionType == 0) {                            // Collision - Rectangle & Sphere
+        if (collisionType == 0) {                       // Collision - Rectangle & Sphere
             if ((missileCentreLeftX >= objectTopLeftX)  // hitting Top side of object
                     && (missileCentreRightX <= objectTopRightX)
                     && (missileTopCentreX >= objectTopLeftY)
