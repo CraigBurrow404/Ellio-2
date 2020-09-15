@@ -69,6 +69,7 @@ public class PlayState extends State {
     private int objectTopLeftY = 25;
     private int objectWidth = 5;
     private int objectHeight = 5;
+    private int collisionType = 0;
 
     @Override
     public void init() {
@@ -79,11 +80,11 @@ public class PlayState extends State {
         cloud2 = new Cloud(500, 50);
         spaceship1 = new Spaceship(800,10);
         ground = new ArrayList<Ground>();
-        missile = new Missile(missileTopLeftX, missileTopLeftY, missileWidth, missileHeight,
+        missile = new Missile(missileCentreX, missileCentreY, missileRadius,
                 missileType);
         collision = new Collision(missileCentreX, missileCentreY, missileRadius,
                 objectTopLeftX, objectTopLeftY, objectWidth, objectHeight,
-                collisionType););
+                collisionType);
 
         for (int i = 0; i < groundTotalLength; i++) {
             changeGroundHeight(groundYCoordinate);

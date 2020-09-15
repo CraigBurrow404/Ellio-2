@@ -1,5 +1,7 @@
 package com.example.ellioandroid.game.model;
 
+import com.example.ellioandroid.game.model.Missile;
+
 public class Collision {
 
     /* Naming convention is x first then Y second so Top Left - is the highest point of the
@@ -22,11 +24,14 @@ public class Collision {
         3 Polymorphic with Sphere
         */
 
-    public boolean Collision(float missileCentreX, float missileCentreY, float missileRadius,
-                     float objectTopLeftX, float objectTopLeftY,
-                     int objectWidth, int objectHeight,
-                     int collisionType) {
+    public booleanCollision {
 
+        missileCentreCentreX = Context.getMissileCentreX(); //*** Got myself in a bit of a pickle
+        getMissileCentreY();
+        getMissileRadius();
+        float objectTopLeftX, float objectTopLeftY,
+        int objectWidth, int objectHeight,
+        int collisionType)
 
         //Caluclate Missile X and Y boundary coordiantes for tests
         this.missileTopCentreX      = missileCentreX;
