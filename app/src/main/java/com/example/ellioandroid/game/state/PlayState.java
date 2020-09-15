@@ -70,6 +70,8 @@ public class PlayState extends State {
     private int objectWidth = 5;
     private int objectHeight = 5;
     private int collisionType = 0;
+    private Collision collision;
+    private int missileState = 0;
 
     @Override
     public void init() {
@@ -80,10 +82,10 @@ public class PlayState extends State {
         cloud2 = new Cloud(500, 50);
         spaceship1 = new Spaceship(800,10);
         ground = new ArrayList<Ground>();
-        missile = new Missile(missileCentreX, missileCentreY, missileRadius,
+        Missile missile = new Missile(missileCentreX, missileCentreY, missileRadius,
                 missileType);
-        collision = new Collision(missileCentreX, missileCentreY, missileRadius,
-               objectTopLeftX, objectTopLeftY, objectHeight, objectWidth, collisionType);
+        Collision collision = new Collision(missileCentreX, missileCentreY, missileRadius,
+                objectTopLeftX, objectTopLeftY, objectHeight, objectWidth, collisionType);
 
         for (int i = 0; i < groundTotalLength; i++) {
             changeGroundHeight(groundYCoordinate);
@@ -105,6 +107,7 @@ public class PlayState extends State {
                 GameMainActivity.GAME_HEIGHT - PLAYER_HEIGHT - groundHeight , PLAYER_WIDTH,
                 PLAYER_HEIGHT, ground.get(6));
     }
+
     // Set Ground Heights using ramps for up and down over 10 blocks to smooth out the
     // contours
     // 0 down - don't go down if you are as low as you can go
@@ -158,9 +161,9 @@ public class PlayState extends State {
         cloud2.update(delta);
         spaceship1.update(delta);
         missile.update(delta);
-        collision.test;
-        if (isCollided()) {
-            missileState = 100;
+        collision.test();
+        if (collision.isCollided()) {
+            missileState = 100; // Missile Collision
         }
         Assets.runAnim.update(delta);
         playerLeft = (int) player.getPlayerLeft();
